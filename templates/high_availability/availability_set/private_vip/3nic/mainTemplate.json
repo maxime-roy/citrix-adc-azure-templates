@@ -148,6 +148,7 @@
     },
     "variables": {
         "managementPublicIpSuffix": "-management-public-ip",
+        "osDiskType": "Premium_LRS" ,
         "storageAccountName": "[concat('stracct', uniqueString(resourceGroup().id))]",
         "vnetResourceGroup": "[if(equals(parameters('vnetResourceGroup'), ''), resourceGroup().name,parameters('vnetResourceGroup'))]",
         "vnetId": "[resourceId(variables('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
@@ -293,6 +294,9 @@
             "name": "[variables('AvailabilitySetName')]",
             "apiVersion": "2017-12-01",
             "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Aligned"
+            },
             "properties": {
                 "platformFaultDomainCount": 3,
                 "platformUpdateDomainCount": 20
@@ -331,10 +335,9 @@
                     },
                     "osDisk": {
                         "createOption": "fromImage",
-                        "vhd": {
-                            "uri": "[concat(reference(variables('storageAccountName'), '2017-10-01').primaryEndpoints.blob, 'vhds/osdisk', copyIndex(), '.vhd')]"
-                        },
-                        "name": "[concat(variables('VpxNamePrefix'), copyIndex())]"
+                        "managedDisk": {
+                            "storageAccountType": "[variables('osDiskType')]"
+                        }
                     },
                     "dataDisks": []
                 },
